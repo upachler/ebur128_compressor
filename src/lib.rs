@@ -1,19 +1,20 @@
 
 extern crate lv2rs;
 
-mod gen;
+mod cmp;
 
 use lv2rs::core::{self,*};
 use std::ffi::CStr;
-use gen::SignalGenerator;
+use cmp::EBUR128Compressor;
 
-pub struct SignalGeneratorPlugin {
+pub struct EBUR128CompressorPlugin {
+    inp: ports::AudioInputPort,
     out: ports::AudioOutputPort,
-    rel_freq: ports::ParameterInputPort,
-    generator: gen::SignalGenerator,
+    threshold: ports::ParameterInputPort,
+    generator: cmp::EBUR128Compressor,
 }
 
-impl Plugin for SignalGeneratorPlugin {
+impl Plugin for EBUR128CompressorPlugin {
 
     fn instantiate(
         _descriptor: &Descriptor,
@@ -22,17 +23,19 @@ impl Plugin for SignalGeneratorPlugin {
         _features: Option<&FeaturesList>,
     ) -> Option<Self> {
         
-        Some(Self {
-            rel_freq: ports::ParameterInputPort::new(),
+        Some(EBUR128CompressorPlugin {
+            threshold: ports::ParameterInputPort::new(),
+            inp: ports::AudioInputPort::new(),
             out: ports::AudioOutputPort::new(),
-            generator: SignalGenerator::new(rate as f32, 300.),
+            generator: EBUR128Compressor::new(rate as f32, 300.),
         })
     }
 
     fn connect_port(&mut self, port: u32, data: *mut ()) {
         match port {
-            0 => self.rel_freq.connect(data as *const f32),
-            1 => self.out.connect(data as *mut f32),
+            0 => self.threshold.connect(data as *const f32),
+            1 => self.inp.connect(data as *mut f32),
+            2 => self.out.connect(data as *mut f32),
             _ => (),
         }
     }    
@@ -42,7 +45,7 @@ impl Plugin for SignalGeneratorPlugin {
     }
 
     fn run(&mut self, n_samples: u32) {
-        let rel_freq = *(unsafe { self.rel_freq.get() }.unwrap());
+        let rel_freq = *(unsafe { self.threshold.get() }.unwrap());
 
         // Convert rel_frequency to frequency
         
@@ -58,4 +61,4 @@ impl Plugin for SignalGeneratorPlugin {
 
 
 
-lv2_main!(core, SignalGeneratorPlugin, b"urn:upachler:signal-generator\0");
+lv2_main!(core, EBUR128CompressorPlugin, b"urn:upachler:ebur128-compressor\0");

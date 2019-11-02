@@ -1,4 +1,4 @@
-pub struct SignalGenerator {
+pub struct EBUR128Compressor {
     rate: f32,
     offset_t: f32,
     new_frequency: f32,
@@ -6,9 +6,9 @@ pub struct SignalGenerator {
 }
 
 
-impl SignalGenerator {
-    pub fn new(rate: f32, frequency: f32) -> SignalGenerator {
-        SignalGenerator {
+impl EBUR128Compressor {
+    pub fn new(rate: f32, frequency: f32) -> EBUR128Compressor {
+        EBUR128Compressor {
             rate,
             new_frequency: frequency,
             current_frequency: frequency,
@@ -32,7 +32,7 @@ impl SignalGenerator {
         if self.new_frequency == self.current_frequency {
             // no frequency change scheduled, render frames normally and
             // record new offset_t for next batch
-            self.offset_t = SignalGenerator::generate_freq(self.rate, output, self.current_frequency, self.offset_t);
+            self.offset_t = EBUR128Compressor::generate_freq(self.rate, output, self.current_frequency, self.offset_t);
         } else {
 
             // how many samples until we reach the end of the period,
@@ -45,7 +45,7 @@ impl SignalGenerator {
                 // we won't reach the end this time, do not change frequency yet, but continue
                 // rendering samples normally instead.
                 // frequency change will be attempted again in next rendering batch
-                self.offset_t = SignalGenerator::generate_freq(self.rate, output, self.current_frequency, self.offset_t);
+                self.offset_t = EBUR128Compressor::generate_freq(self.rate, output, self.current_frequency, self.offset_t);
             } else {
                 // we'll read the end of current_frequency's domain, issue frequency change
                 // by splitting the buffer in two segments:
@@ -55,10 +55,10 @@ impl SignalGenerator {
 
                 // calculate left buffer first, but ignore reported offset time - it'll be close
                 // to zero
-                SignalGenerator::generate_freq(self.rate, left, self.current_frequency, self.offset_t);
+                EBUR128Compressor::generate_freq(self.rate, left, self.current_frequency, self.offset_t);
 
                 // calculate right buffer side with new frequency after that, starting at offset 0
-                self.offset_t = SignalGenerator::generate_freq(self.rate, right, self.new_frequency, 0f32);
+                self.offset_t = EBUR128Compressor::generate_freq(self.rate, right, self.new_frequency, 0f32);
 
                 self.current_frequency = self.new_frequency;
             }
@@ -93,10 +93,10 @@ impl SignalGenerator {
 
 #[cfg(test)]
 mod tests {
-    use crate::SignalGenerator;
+    use crate::EBUR128Compressor;
     #[test]
     fn test_signal() {
-        let mut gen = SignalGenerator::new(8.0, 1.);
+        let mut gen = EBUR128Compressor::new(8.0, 1.);
 
         let mut buf: Vec<f32> = Vec::new();
         buf.resize(gen.rate as usize + 1, 0.0);
@@ -123,7 +123,7 @@ mod tests {
     fn test_continuation_simple() {
         // to ensure that we 
 
-        let mut gen = SignalGenerator::new(8., 1.);
+        let mut gen = EBUR128Compressor::new(8., 1.);
 
         let mut buf = Vec::new();
         buf.resize(4, 0.);
@@ -141,7 +141,7 @@ mod tests {
 
     #[test]
     fn test_continuation_odd() {
-        let mut gen = SignalGenerator::new(16., 1.);
+        let mut gen = EBUR128Compressor::new(16., 1.);
         gen.offset_t = 0.25;
 
         let mut buf = Vec::new();
@@ -180,7 +180,7 @@ mod tests {
 
     #[test]
     fn change_frequency() {
-        let mut gen = SignalGenerator::new(8., 2.);
+        let mut gen = EBUR128Compressor::new(8., 2.);
 
         let mut buf = Vec::new();
         buf.resize(2, 0.);

@@ -5,8 +5,8 @@
 @prefix lv2:  <http://lv2plug.in/ns/lv2core#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
-<urn:upachler:signal-generator> a lv2:Plugin .
+<urn:upachler:ebur128-compressor> a lv2:Plugin .
 
-<urn:upachler:signal-generator> lv2:binary <@LIBNAME@> .
+<urn:upachler:ebur128-compressor> lv2:binary <@LIBNAME@> .
 
-<urn:upachler:signal-generator> rdfs:seeAlso <signal_generator.ttl> .
+<urn:upachler:ebur128-compressor> rdfs:seeAlso <plugin_def.ttl> .

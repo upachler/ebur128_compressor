@@ -1,6 +1,5 @@
-# lv2-signal-gen
-Test Plugin for audio software in [LV2 format](http://lv2plug.in/]). The plugin generates a sine wave with variable frequency. 
-Users can change the frequency at rumtime.
+# EBU R128 Audio Compressor LV2 Plugin
+Plugin to perform (dynamic range compression)[https://en.wikipedia.org/wiki/Dynamic_range_compression] on digital audio signals, realized as [LV2 plugin](http://lv2plug.in/]). 
 
 Use an LV2 plugin host like [Carla](https://kx.studio/Applications:Carla) as a plugin host and (optionally) 
 an oscilloscope plugin (like the [x42 Oscilloscpe](https://x42-plugins.com/x42/x42-scope)) for testing.

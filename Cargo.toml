@@ -1,5 +1,5 @@
 [package]
-name = "signal-generator"
+name = "ebur128-compressor"
 version = "0.1.0"
 authors = ["Pachler, Uwe <uwe.pachler@datagroup.de>"]
 edition = "2018"
